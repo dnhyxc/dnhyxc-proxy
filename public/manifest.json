@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Local Resource Proxy",
+  "version": "1.0",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://dnhyxc.cn/*",
+    "*://101.43.50.15/*",
+    "*://moa-bc.uban360.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
