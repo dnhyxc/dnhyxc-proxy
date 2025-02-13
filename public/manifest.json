@@ -8,9 +8,7 @@
     "storage"
   ],
   "host_permissions": [
-    "*://dnhyxc.cn/*",
-    "*://101.43.50.15/*",
-    "*://moa-bc.uban360.com/*"
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"

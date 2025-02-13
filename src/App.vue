@@ -14,7 +14,7 @@
 					style="flex: 1"
 				/>
 			</div>
-			<div style="display: flex; width: 100%">
+			<div style="display: flex; width: 100%; margin: 10px 0">
 				<label>代理资源：</label>
 				<input
 					type="text"
@@ -40,15 +40,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 	// https://moa-bc.uban360.com/bpmn/form-client-web/index.js http://localhost:8098/index.js
 	// https://moa-bc.uban360.com/form-data-manage/index.js https://localhost:8091/index.js
 	document.getElementById("urlFilter").value =
-		urlFilter || "https://moa-bc.uban360.com/form-data-manage/index.js";
+		urlFilter?.[0] || "https://moa-bc.uban360.com/form-data-manage/index.js";
 	document.getElementById("redirectUrl").value =
-		redirectUrl || "https://localhost:8091/index.js";
+		redirectUrl?.[0] || "https://localhost:8091/index.js";
 
-	document.getElementById("save").addEventListener("click", () => {
-		chrome.storage.local.set({
-			urlFilter: document.getElementById("urlFilter").value,
-			redirectUrl: document.getElementById("redirectUrl").value,
-		});
+	document.getElementById("save").addEventListener("click", async () => {
+		const { urlFilter, redirectUrl } = await chrome.storage.local.get([
+			"urlFilter",
+			"redirectUrl",
+		]);
+		console.log(urlFilter, redirectUrl, "popup.js");
+		if (!urlFilter || !redirectUrl) {
+			chrome.storage.local.set({
+				urlFilter: [document.getElementById("urlFilter").value],
+				redirectUrl: [document.getElementById("redirectUrl").value],
+			});
+		} else {
+			chrome.storage.local.set({
+				urlFilter: [document.getElementById("urlFilter").value, ...urlFilter],
+				redirectUrl: [
+					document.getElementById("redirectUrl").value,
+					...redirectUrl,
+				],
+			});
+		}
+
 		window.close();
 	});
 

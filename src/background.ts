@@ -1,15 +1,3 @@
-// 初始化动态规则
-chrome.runtime.onInstalled.addListener(async () => {
-	console.log("installed");
-	const rules = await createRedirectRule();
-	if (rules) {
-		await chrome.declarativeNetRequest.updateDynamicRules({
-			removeRuleIds: [],
-			addRules: [rules],
-		});
-	}
-});
-
 // 创建重定向规则
 async function createRedirectRule() {
 	const { urlFilter, redirectUrl } = await chrome.storage.local.get([
@@ -18,50 +6,66 @@ async function createRedirectRule() {
 	]);
 
 	// 如果代理功能未启用，则不添加规则
-	if (!urlFilter || !redirectUrl) {
+	if (!urlFilter?.length || !redirectUrl?.length) {
 		return null;
 	}
 
-	// 确保 urlFilter 和 redirectUrl 都是一个有效的 URL，如果不是，则使用默认值
-	const validRedirectUrl =
-		redirectUrl && /^https?:\/\/[^\s/$.?#].[^\s]*$/.test(redirectUrl)
-			? redirectUrl
-			: "https://localhost:8091/index.js";
-	const validUrlFilter =
-		urlFilter && /^https?:\/\/[^\s/$.?#].[^\s]*$/.test(urlFilter)
-			? urlFilter
-			: "https://moa-bc.uban360.com/form-data-manage/index.js";
+	const rules = urlFilter.map((i: string, index: number) => {
+		// 确保 urlFilter 和 redirectUrl 都是一个有效的 URL，如果不是，则使用默认值
+		const validUrlFilter =
+			i && /^https?:\/\/[^\s/$.?#].[^\s]*$/.test(i) ? i : "";
+		const validRedirectUrl =
+			redirectUrl[index] &&
+			/^https?:\/\/[^\s/$.?#].[^\s]*$/.test(redirectUrl[index])
+				? redirectUrl[index]
+				: "";
 
-	console.log("urlFilter", urlFilter, "validRedirectUrl", validRedirectUrl);
-
-	return {
-		id: 1,
-		priority: 1,
-		action: {
-			type: "redirect",
-			redirect: {
-				url: validRedirectUrl,
+		return {
+			id: index + 1,
+			priority: 1,
+			action: {
+				type: "redirect",
+				redirect: {
+					url: validRedirectUrl,
+				},
 			},
-		},
-		condition: {
-			urlFilter: validUrlFilter,
-			resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "other"],
-		},
-	};
+			condition: {
+				urlFilter: validUrlFilter,
+				resourceTypes: ["main_frame", "script"],
+			},
+		};
+	});
+
+	return rules;
 }
+
+// 初始化动态规则
+chrome.runtime.onInstalled.addListener(async () => {
+	const rules = await createRedirectRule();
+	if (rules?.length) {
+		await chrome.declarativeNetRequest.updateDynamicRules({
+			removeRuleIds: [],
+			addRules: rules,
+		});
+	}
+});
 
 // 监听配置变更
 chrome.storage.onChanged.addListener(async () => {
-	console.log("storage changed");
 	const rules = await createRedirectRule();
 	if (rules) {
+		console.log("rules-----", rules);
 		await chrome.declarativeNetRequest.updateDynamicRules({
-			removeRuleIds: [1],
-			addRules: [rules],
+			removeRuleIds:
+				rules?.map((i: any) => i.id) ||
+				Array.from({ length: 101 }, (_, i) => i),
+			addRules: rules,
 		});
 	} else {
 		await chrome.declarativeNetRequest.updateDynamicRules({
-			removeRuleIds: [1],
+			removeRuleIds:
+				rules?.map((i: any) => i.id) ||
+				Array.from({ length: 101 }, (_, i) => i),
 		});
 	}
 });
