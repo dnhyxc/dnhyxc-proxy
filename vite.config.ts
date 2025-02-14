@@ -1,21 +1,33 @@
 import path from "path";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import ElementPlus from "unplugin-element-plus/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+
 // import { viteStaticCopy } from "vite-plugin-static-copy";
 
 // https://vite.dev/config/
 export default defineConfig({
 	plugins: [
 		vue(),
-		// viteStaticCopy({
-		// 	targets: [
-		// 		{
-		// 			src: "./src/background.ts", // 源文件路径（根目录）
-		// 			dest: "dist", // 目标目录（默认输出到 dist 的根目录）
-		// 		},
-		// 	],
-		// }),
+		AutoImport({
+			resolvers: [ElementPlusResolver()],
+		}),
+		Components({
+			resolvers: [ElementPlusResolver()],
+		}),
+		ElementPlus({}),
 	],
+	resolve: {
+		// 设置别名
+		alias: {
+			"@": path.resolve(__dirname, "src"),
+		},
+		// 忽略后缀名的配置选项, 添加 .vue 选项时要记得原本默认忽略的选项也要手动写入
+		extensions: [".js", ".ts", ".json", ".vue"],
+	},
 	build: {
 		rollupOptions: {
 			input: {
