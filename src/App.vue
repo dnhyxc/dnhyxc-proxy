@@ -1,7 +1,10 @@
 <template>
 	<div class="wrap">
 		<div class="add">
-			<div class="title">Dnhyxc Proxy</div>
+			<div class="title">
+				<img src="/public/128.png" alt="icon" class="icon" />
+				Dnhyxc Proxy
+			</div>
 			<el-form
 				ref="formRef"
 				style="max-width: 600px"
@@ -291,11 +294,19 @@ const onDelete = (index: number) => {
 
 	.add {
 		.title {
+			display: flex;
+			align-items: center;
 			font-size: 20px;
 			font-weight: 500;
 			padding: 0 0 10px;
 			margin-bottom: 10px;
 			border-bottom: 1px solid #5e5e5e;
+
+			.icon {
+				width: 35px;
+				height: 35px;
+				margin-right: 10px;
+			}
 		}
 	}
 
