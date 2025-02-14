@@ -137,8 +137,6 @@ onMounted(() => {
 		const { urlFilter, redirectUrl, closedRules } = await getStorage();
 		filterUrls.value = urlFilter || [];
 		redirectUrls.value = redirectUrl || [];
-		dynamicValidateForm.redirectUrl = redirectUrl?.[0] || "";
-		dynamicValidateForm.urlFilter = urlFilter?.[0] || "";
 		closedKeys.value = closedRules || [];
 	});
 });
@@ -174,6 +172,8 @@ const onAddRule = async () => {
 				}
 			}
 			ElMessage.success("设置成功");
+			dynamicValidateForm.redirectUrl = "";
+			dynamicValidateForm.urlFilter = "";
 			// window.close();
 		} else {
 			console.log("error submit");
