@@ -328,7 +328,7 @@ const onDelete = (index: number) => {
 
 	.rule-list {
 		width: 100%;
-		max-height: 278px;
+		max-height: 268px;
 		margin-top: 16px;
 		border-radius: 5px;
 		padding: 1px 5px;
